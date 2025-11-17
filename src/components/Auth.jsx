@@ -23,7 +23,17 @@ export default function Auth({ onLogin }) {
       }
       onLogin();
     } catch (err) {
-      setError(err.message);
+      if (err.code === 'auth/user-not-found') {
+        setError('Email tidak ditemukan');
+      } else if (err.code === 'auth/wrong-password') {
+        setError('Password salah');
+      } else if (err.code === 'auth/email-already-in-use') {
+        setError('Email sudah terdaftar');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Password minimal 6 karakter');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -34,6 +44,9 @@ export default function Auth({ onLogin }) {
       
         
           💰 Budget Tracker
+        
+        
+          Sync otomatis di semua device
         
         
         
@@ -87,6 +100,7 @@ export default function Auth({ onLogin }) {
               minLength={6}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+            Minimal 6 karakter
           
 
           {error && (
@@ -97,7 +111,10 @@ export default function Auth({ onLogin }) {
 
           
             {loading ? (
-              'Loading...'
+              <>
+                
+                Loading...
+              </>
             ) : isLogin ? (
               <>
                 
@@ -106,14 +123,16 @@ export default function Auth({ onLogin }) {
             ) : (
               <>
                 
-                Daftar
+                Daftar Akun Baru
               </>
             )}
           
         
 
         
-          Data Anda akan tersimpan dan tersinkron di semua device
+          
+            💡 Tips: Gunakan email yang sama di laptop & HP untuk sync data
+          
         
       
     
