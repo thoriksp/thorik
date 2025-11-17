@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, TrendingUp, TrendingDown, DollarSign, Target, Edit2, Check, X, Zap, Calendar, Filter, Download, Search, AlertTriangle, CheckCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 // Di bagian import, tambahkan:
-import { ref, set, get, onValue } from 'firebase/database';
+import { ref, set, onValue } from 'firebase/database';
 import { database } from '../firebase';
-
-
+import { LogOut } from 'lucide-react';
 
 export default function BudgetTracker() {
   const [transactions, setTransactions] = useState([]);
@@ -41,32 +40,31 @@ export default function BudgetTracker() {
 
   // Load data from localStorage
   useEffect(() => {
-  if (!user) return;
+    if (!user) return;
+    
+    const transactionsRef = ref(database, `users/${user.uid}/transactions`);
+    const targetsRef = ref(database, `users/${user.uid}/targets`);
   
-  const transactionsRef = ref(database, `users/${user.uid}/transactions`);
-  const targetsRef = ref(database, `users/${user.uid}/targets`);
-
-  // Listen to realtime changes
-  const unsubTrans = onValue(transactionsRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      setTransactions(data);
-    }
-    setIsLoading(false);
-  });
-
-  const unsubTargets = onValue(targetsRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      setTargets(data);
-    }
-  });
-
-  return () => {
-    unsubTrans();
-    unsubTargets();
-  };
-}, [user]);
+    const unsubTrans = onValue(transactionsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data && Array.isArray(data)) {
+        setTransactions(data);
+      }
+      setIsLoading(false);
+    });
+  
+    const unsubTargets = onValue(targetsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data && Array.isArray(data)) {
+        setTargets(data);
+      }
+    });
+  
+    return () => {
+      unsubTrans();
+      unsubTargets();
+    };
+  }, [user]);
 
   // Save transactions to localStorage
   useEffect(() => {
@@ -74,13 +72,6 @@ export default function BudgetTracker() {
       set(ref(database, `users/${user.uid}/transactions`), transactions);
     }
   }, [transactions, isLoading, user]);
-
-  // Save targets to localStorage
-  useEffect(() => {
-    if (!isLoading && user && targets.length >= 0) {
-      set(ref(database, `users/${user.uid}/targets`), targets);
-    }
-  }, [targets, isLoading, user]);
 
   // Check for budget alerts
   useEffect(() => {
@@ -156,15 +147,12 @@ export default function BudgetTracker() {
     }));
   };
 
+  // Save targets to Firebase
   useEffect(() => {
-    const updatedTargets = targets.map(target => {
-      const spent = transactions
-        .filter(t => t.type === 'pengeluaran' && t.category === target.name)
-        .reduce((sum, t) => sum + t.amount, 0);
-      return { ...target, spent };
-    });
-    setTargets(updatedTargets);
-  }, [transactions]);
+    if (!isLoading && user && targets.length >= 0) {
+      set(ref(database, `users/${user.uid}/targets`), targets);
+    }
+  }, [targets, isLoading, user]);
 
   const getWeeklyData = () => {
     const weekDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -398,6 +386,8 @@ export default function BudgetTracker() {
   
   
           Logout
+
+          
         </h1>
 
         {alerts.length > 0 && (
