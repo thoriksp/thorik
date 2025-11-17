@@ -3,13 +3,13 @@ import { getDatabase } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDpKxY8k1fy2tgRxtrnHyoWffLBrQDGhxI",
+  authDomain: "budget-tracker-92dbd.firebaseapp.com",
+  databaseURL: "https://budget-tracker-92dbd-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "budget-tracker-92dbd",
+  storageBucket: "budget-tracker-92dbd.firebasestorage.app",
+  messagingSenderId: "1086543623280",
+  appId: "1:1086543623280:web:3343f3f6cc36bdb59b30b5"
 };
 
 const app = initializeApp(firebaseConfig);
