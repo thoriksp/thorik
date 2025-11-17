@@ -18,7 +18,12 @@ function App() {
   }, []);
 
   const handleLogout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   if (loading) {
@@ -26,7 +31,7 @@ function App() {
       
         
           
-          Loading...
+          Memuat...
         
       
     );
